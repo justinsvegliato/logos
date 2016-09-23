@@ -111,8 +111,6 @@ def policy_iteration(mdp, iterations):
 
         policy = new_policy
 
-# TODO The cost is a function of a state right now. It should be a function of an action and a state. This algorithm
-# needs work and is probably wrong because I'm a bad coder.
 def rtdp(ssp, trials):
     values = get_initial_values(ssp)
     visited_states = {}
@@ -124,13 +122,9 @@ def rtdp(ssp, trials):
             key = ssp.get_key(current_state)
             visited_states[key] = current_state
 
-            for state in ssp.states:
-                key = ssp.get_key(state)
-                # TODO: Fix this... This is so wrong
-                for action in ssp.get_actions(state):
-                    values[key] = ssp.get_cost(state, action) + min(get_expected_values(ssp, state, values))
-
             best_action = get_best_action(ssp, current_state, values, maximize=False)
+            values[key] = ssp.get_cost(current_state, best_action) + min(get_expected_values(ssp, current_state, values))
+
             transition_probabilities = ssp.get_transition_probabilities(current_state, best_action)
             current_state = utils.get_random_variable(transition_probabilities)
 
