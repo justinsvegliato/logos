@@ -1,5 +1,6 @@
 import random
 
+
 def argmax(args, function):
     best = args[0]
     best_score = float('-inf')
@@ -9,6 +10,7 @@ def argmax(args, function):
             best, best_score = arg, score
     return best
 
+
 def argmin(args, function):
     best = args[0]
     best_score = float('inf')
@@ -17,6 +19,7 @@ def argmin(args, function):
         if score < best_score:
             best, best_score = arg, score
     return best
+
 
 def get_random_variable(probability_distribution):
     selection = random.random()
