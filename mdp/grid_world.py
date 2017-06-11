@@ -1,7 +1,8 @@
 import random
 import numpy as np
+from utils import key
 
-GRID_SIZE = 6
+GRID_SIZE = 3
 SLIP_PROBABILITY = 0.1
 
 GOAL_REWARD = 1
@@ -40,46 +41,52 @@ def get_goal_state():
 
 
 def get_successor_state(state, action):
-    x, y = get_robot_location(state)
+    location = get_location(state)
 
-    delta_x, delta_y = ACTIONS[action]
-    new_x, new_y = x + delta_x, y + delta_y
+    x, y = location
+    next_x, next_y = get_next_location(location, action)
 
-    new_state = np.asmatrix(np.copy(state))
-    new_state[x, y] = 0
-    new_state[new_x, new_y] = 1
+    next_state = np.asmatrix(np.copy(state))
+    next_state[x, y] = 0
+    next_state[next_x, next_y] = 1
 
-    return new_state
+    return next_state
 
 
 def get_next_state(state, action):
     return state if random.random() <= SLIP_PROBABILITY else get_successor_state(state, action)
 
 
-def get_robot_location(state):
+def get_location(state):
     locations = np.where(state == ROBOT_SYMBOL)
     x = locations[0][0]
     y = locations[1][0]
     return x, y
 
 
-def is_valid_location(x, y):
+def get_next_location(location, action):
+    x, y = location
+    delta_x, delta_y = ACTIONS[action]
+    new_x, new_y = x + delta_x, y + delta_y
+    return new_x, new_y
+
+
+def is_valid_location(location):
+    x, y = location
     return GRID_SIZE > x >= 0 and GRID_SIZE > y >= 0
 
 
 def get_successor_states(state):
     successor_states = []
-    for action in get_actions(state):
-        successor_states.append(get_successor_state(state, action))
+
+    location = get_location(state)
+    for action in ACTIONS:
+        next_location = get_next_location(location, action)
+        if is_valid_location(next_location):
+            successor_state = get_successor_state(state, action)
+            successor_states.append(successor_state)
+
     return successor_states
-
-
-def get_key(state):
-    representation = ''
-    for row in np.array(state):
-        for element in row:
-            representation += str(element)
-    return representation
 
 
 def get_states():
@@ -89,42 +96,35 @@ def get_states():
     while len(frontier) > 0:
         current_state = frontier.pop()
 
-        current_state_key = get_key(current_state)
-        states[current_state_key] = current_state
+        states[key(current_state)] = current_state
 
         for state in get_successor_states(current_state):
-            successor_state_key = get_key(state)
-            if successor_state_key in states:
-                continue
-
-            states[successor_state_key] = state
-            frontier.append(state)
+            if key(state) not in states:
+                states[key(state)] = state
+                frontier.append(state)
 
     return states.values()
 
 
-def get_actions(state):
-    x, y = get_robot_location(state)
-
-    actions = []
-    for action in ACTIONS:
-        delta_x, delta_y = ACTIONS[action]
-        new_x, new_y = x + delta_x, y + delta_y
-
-        if is_valid_location(new_x, new_y):
-            actions.append(action)
-
-    return actions
+def get_actions():
+    return ACTIONS
 
 
-def get_transition_probabilities(state, action):
-    return [
-        (state, SLIP_PROBABILITY),
-        (get_successor_state(state, action), 1 - SLIP_PROBABILITY)
-    ]
+def get_transition_probability(state, action, next_state):
+    current_location = get_location(state)
+    target_location = get_location(next_state)
+    next_location = get_next_location(current_location, action)
+
+    if target_location != next_location:
+        return 0
+
+    if current_location == target_location:
+        return SLIP_PROBABILITY
+
+    return 1 - SLIP_PROBABILITY
 
 
-def get_reward(state, action):
+def get_reward(state):
     return GOAL_REWARD if np.array_equal(state, get_goal_state()) else NON_GOAL_REWARD
 
 
