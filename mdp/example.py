@@ -8,7 +8,7 @@ from mdp import MDP
 from utils import key
 
 
-def execute_policy(policy):
+def simulate(policy):
     steps = 0
     current_state = domain.get_start_state()
 
@@ -31,17 +31,7 @@ def execute_vi_example(mdp):
     end = time.clock()
     print('The MDP was solved using VI in %d seconds.' % (end - start))
 
-    steps = execute_policy(policy)
-    print('The agent reached the goal in %s steps.' % steps)
-
-
-def execute_rtdp_example(ssp):
-    start = time.clock()
-    policy = ssp.solve(solver='rtdp')
-    end = time.clock()
-    print('The SSP was solved using VI in %d seconds.' % (end - start))
-
-    steps = execute_policy(policy)
+    steps = simulate(policy)
     print('The agent reached the goal in %s steps.' % steps)
 
 
@@ -51,7 +41,7 @@ def execute_pi_example(mdp):
     end = time.clock()
     print('The MDP was solved using PI in %d seconds.' % (end - start))
 
-    steps = execute_policy(policy)
+    steps = simulate(policy)
     print('The agent reached the goal in %s steps.' % steps)
 
 
