@@ -13,18 +13,3 @@ class MDP(object):
         if isinstance(solver, str):
             solver = solvers.INDEX[solver]()
         return solver.solve(self)
-
-
-class SSP(object):
-    def __init__(self, states, actions, get_transition_probability, get_cost, start_state, goal_state):
-        self.states = states
-        self.actions = actions
-        self.get_transition_probability = get_transition_probability
-        self.get_cost = get_cost
-        self.start_state = start_state
-        self.goal_state = goal_state
-
-    def solve(self, solver='rtdp'):
-        if isinstance(solver, str):
-            solver = solvers.INDEX[solver]()
-        return solver.solve(self)

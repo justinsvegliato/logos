@@ -113,13 +113,14 @@ def get_actions():
 def get_transition_probability(state, action, next_state):
     current_location = get_location(state)
     target_location = get_location(next_state)
+
+    if current_location == target_location:
+        return SLIP_PROBABILITY
+
     next_location = get_next_location(current_location, action)
 
     if target_location != next_location:
         return 0
-
-    if current_location == target_location:
-        return SLIP_PROBABILITY
 
     return 1 - SLIP_PROBABILITY
 

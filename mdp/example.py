@@ -4,7 +4,7 @@ import time
 import numpy as np
 
 import grid_world as domain
-from mdp import MDP, SSP
+from mdp import MDP
 from utils import key
 
 
@@ -56,30 +56,19 @@ def execute_pi_example(mdp):
 
 
 def main():
-    # mdp = MDP(
-    #     domain.get_states(),
-    #     domain.get_actions(),
-    #     domain.get_transition_probability,
-    #     domain.get_reward
-    # )
-
-    # print('Value Iteration:')
-    # execute_vi_example(mdp)
-    # print()
-
-    # print('Policy Iteration:')
-    # execute_pi_example(mdp)
-
-    ssp = SSP(
+    mdp = MDP(
         domain.get_states(),
         domain.get_actions(),
         domain.get_transition_probability,
-        domain.get_cost,
-        domain.get_start_state(),
-        domain.get_goal_state()
+        domain.get_reward
     )
 
-    execute_rtdp_example(ssp)
+    print('Value Iteration:')
+    execute_vi_example(mdp)
+    print()
+
+    print('Policy Iteration:')
+    execute_pi_example(mdp)
 
 
 if __name__ == '__main__':
