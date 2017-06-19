@@ -9,6 +9,14 @@ def get_initial_policy(mdp):
     return {key(state): random.choice(get_actions(mdp, state)) for state in mdp.states}
 
 
+def get_initial_action_value_function(mdp):
+    return {key(state): {action: 0 for action in mdp.actions} for state in mdp.states}
+
+
+def get_initial_returns(mdp):
+    return {key(state): {action: [] for action in mdp.actions} for state in mdp.states}
+
+
 def get_actions(mdp, state):
     actions = []
 

@@ -16,10 +16,10 @@ ROBOT_SYMBOL = 1
 SYMBOLS = ['O', 'R']
 
 ACTIONS = {
-    'North': (0, 1),
-    'East': (1, 0),
-    'South': (0, -1),
-    'West': (-1, 0),
+    'North': (-1, 0),
+    'East': (0, 1),
+    'South': (1, 0),
+    'West': (0, -1),
     'Stay': (0, 0)
 }
 
@@ -44,7 +44,12 @@ def get_successor_state(state, action):
     location = get_location(state)
 
     x, y = location
-    next_x, next_y = get_next_location(location, action)
+
+    next_location = get_next_location(location, action)
+    next_x, next_y = next_location
+
+    if not is_valid_location(next_location):
+        return state
 
     next_state = np.asmatrix(np.copy(state))
     next_state[x, y] = 0

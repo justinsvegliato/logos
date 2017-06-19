@@ -20,8 +20,6 @@ def simulate(policy):
         if steps > 1000:
             return False
 
-    print(current_state)
-
     return steps
 
 
@@ -45,6 +43,16 @@ def execute_pi_example(mdp):
     print('The agent reached the goal in %s steps.' % steps)
 
 
+def execute_mc_example(mdp):
+    start = time.clock()
+    policy = mdp.solve(solver='mc')
+    end = time.clock()
+    print('The MDP was solved using MC in %d seconds.' % (end - start))
+
+    steps = simulate(policy)
+    print('The agent reached the goal in %s steps.' % steps)
+
+
 def main():
     mdp = MDP(
         domain.get_states(),
@@ -59,6 +67,10 @@ def main():
 
     print('Policy Iteration:')
     execute_pi_example(mdp)
+    print()
+
+    print('Monte Carlo:')
+    execute_mc_example(mdp)
 
 
 if __name__ == '__main__':
