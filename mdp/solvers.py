@@ -1,6 +1,7 @@
 import mc
 import pi
 import vi
+import td
 
 
 class VI(object):
@@ -28,8 +29,18 @@ class MC(object):
         return mc.solve(mdp, self.episodes, self.epsilon)
 
 
+class TD(object):
+    def __init__(self, episodes=50, epsilon=0.1):
+        self.episodes = episodes
+        self.epsilon = epsilon
+
+    def solve(self, mdp):
+        return td.solve(mdp, self.episodes, self.epsilon)
+
+
 INDEX = {
     'vi': VI,
     'pi': PI,
-    'mc': MC
+    'mc': MC,
+    'td': TD
 }

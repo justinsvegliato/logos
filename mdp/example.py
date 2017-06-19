@@ -53,6 +53,16 @@ def execute_mc_example(mdp):
     print('The agent reached the goal in %s steps.' % steps)
 
 
+def execute_td_example(mdp):
+    start = time.clock()
+    policy = mdp.solve(solver='td')
+    end = time.clock()
+    print('The MDP was solved using TD in %d seconds.' % (end - start))
+
+    steps = simulate(policy)
+    print('The agent reached the goal in %s steps.' % steps)
+
+
 def main():
     mdp = MDP(
         domain.get_states(),
@@ -71,6 +81,10 @@ def main():
 
     print('Monte Carlo:')
     execute_mc_example(mdp)
+    print()
+
+    print('TD:')
+    execute_td_example(mdp)
 
 
 if __name__ == '__main__':

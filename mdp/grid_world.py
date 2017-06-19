@@ -44,7 +44,6 @@ def get_successor_state(state, action):
     location = get_location(state)
 
     x, y = location
-
     next_location = get_next_location(location, action)
     next_x, next_y = next_location
 
