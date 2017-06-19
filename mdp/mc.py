@@ -10,7 +10,9 @@ from utils import key
 def get_episode(mdp, policy, epsilon):
     episode = []
 
-    state = domain.get_start_state()
+    state = random.choice(mdp.states)
+    while np.array_equal(state, domain.get_goal_state()):
+        state = random.choice(mdp.states)
 
     while not np.array_equal(state, domain.get_goal_state()):
         state_key = key(state)

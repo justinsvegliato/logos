@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 import time
 
 import numpy as np
@@ -9,11 +10,11 @@ from utils import key
 
 
 def simulate(policy):
+    state = domain.get_start_state()
     steps = 0
-    current_state = domain.get_start_state()
 
-    while not np.array_equal(current_state, domain.get_goal_state()):
-        current_state = domain.get_next_state(current_state, policy[key(current_state)])
+    while not np.array_equal(state, domain.get_goal_state()):
+        state = domain.get_next_state(state, policy[key(state)])
 
         steps += 1
 
@@ -23,44 +24,21 @@ def simulate(policy):
     return steps
 
 
-def execute_vi_example(mdp):
+def test(mdp, solver, tests=20):
     start = time.clock()
-    policy = mdp.solve(solver='vi')
+    policy = mdp.solve(solver=solver)
     end = time.clock()
-    print('The MDP was solved using VI in %d seconds.' % (end - start))
 
-    steps = simulate(policy)
-    print('The agent reached the goal in %s steps.' % steps)
+    steps = [simulate(policy) for test in range(tests)]
+    average_steps = np.average(steps)
 
+    results = json.dumps({
+        'solver': solver,
+        'time': end - start,
+        'steps': average_steps
+    })
 
-def execute_pi_example(mdp):
-    start = time.clock()
-    policy = mdp.solve(solver='pi')
-    end = time.clock()
-    print('The MDP was solved using PI in %d seconds.' % (end - start))
-
-    steps = simulate(policy)
-    print('The agent reached the goal in %s steps.' % steps)
-
-
-def execute_mc_example(mdp):
-    start = time.clock()
-    policy = mdp.solve(solver='mc')
-    end = time.clock()
-    print('The MDP was solved using MC in %d seconds.' % (end - start))
-
-    steps = simulate(policy)
-    print('The agent reached the goal in %s steps.' % steps)
-
-
-def execute_td_example(mdp):
-    start = time.clock()
-    policy = mdp.solve(solver='td')
-    end = time.clock()
-    print('The MDP was solved using TD in %d seconds.' % (end - start))
-
-    steps = simulate(policy)
-    print('The agent reached the goal in %s steps.' % steps)
+    print(results)
 
 
 def main():
@@ -71,20 +49,9 @@ def main():
         domain.get_reward
     )
 
-    print('Value Iteration:')
-    execute_vi_example(mdp)
-    print()
-
-    print('Policy Iteration:')
-    execute_pi_example(mdp)
-    print()
-
-    print('Monte Carlo:')
-    execute_mc_example(mdp)
-    print()
-
-    print('TD:')
-    execute_td_example(mdp)
+    test(mdp, 'vi')
+    test(mdp, 'pi')
+    test(mdp, 'mc')
 
 
 if __name__ == '__main__':
