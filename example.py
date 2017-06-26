@@ -4,9 +4,11 @@ import time
 
 import numpy as np
 
+import core
+import dp
 import grid_world as domain
+import rl
 from mdp import MDP
-from utils import key
 
 
 def simulate(policy):
@@ -14,7 +16,9 @@ def simulate(policy):
     steps = 0
 
     while not np.array_equal(state, domain.get_goal_state()):
-        state = domain.get_next_state(state, policy[key(state)])
+        state_key = core.key(state)
+        action = policy[state_key]
+        state = domain.get_next_state(state, action)
 
         steps += 1
 
@@ -26,19 +30,16 @@ def simulate(policy):
 
 def test(mdp, solver, tests=20):
     start = time.clock()
-    policy = mdp.solve(solver=solver)
+    policy = solver(mdp)
     end = time.clock()
 
     steps = [simulate(policy) for test in range(tests)]
     average_steps = np.average(steps)
 
-    results = json.dumps({
-        'solver': solver,
+    return json.dumps({
         'time': end - start,
         'steps': average_steps
     })
-
-    print(results)
 
 
 def main():
@@ -49,9 +50,10 @@ def main():
         domain.get_reward
     )
 
-    test(mdp, 'vi')
-    test(mdp, 'pi')
-    test(mdp, 'mc')
+    print('VI: %s' % test(mdp, dp.value_iteration))
+    print('PI: %s' % test(mdp, dp.policy_iteration))
+    print('MC: %s' % test(mdp, rl.monte_carlo))
+    print('TD: %s' % test(mdp, rl.td_learning))
 
 
 if __name__ == '__main__':

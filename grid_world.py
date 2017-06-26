@@ -1,6 +1,8 @@
 import random
+
 import numpy as np
-from utils import key
+
+from core import key
 
 GRID_SIZE = 3
 
@@ -44,16 +46,16 @@ def get_goal_state():
 
 def get_successor_state(state, action):
     location = get_location(state)
-
-    x, y = location
     next_location = get_next_location(location, action)
-    next_x, next_y = next_location
 
     if not is_valid_location(next_location):
         return state
 
+    current_x, current_y = location
+    next_x, next_y = next_location
+
     next_state = np.asmatrix(np.copy(state))
-    next_state[x, y] = 0
+    next_state[current_x, current_y] = 0
     next_state[next_x, next_y] = 1
 
     return next_state
@@ -65,9 +67,9 @@ def get_next_state(state, action):
 
 def get_location(state):
     locations = np.where(state == ROBOT_SYMBOL)
-    x = locations[0][0]
-    y = locations[1][0]
-    return x, y
+    current_x = locations[0][0]
+    current_y = locations[1][0]
+    return current_x, current_y
 
 
 def get_next_location(location, action):
@@ -78,8 +80,8 @@ def get_next_location(location, action):
 
 
 def is_valid_location(location):
-    x, y = location
-    return GRID_SIZE > x >= 0 and GRID_SIZE > y >= 0
+    current_x, current_y = location
+    return GRID_SIZE > current_x >= 0 and GRID_SIZE > current_y >= 0
 
 
 def get_successor_states(state):
@@ -131,7 +133,8 @@ def get_transition_probability(state, action, next_state):
     if target_location != next_location:
         return 0
 
-    normalizer = len(get_successor_states(state)) - 1
+    states = get_successor_states(state)
+    normalizer = len(states) - 1
     return (1 - SLIP_PROBABILITY) / normalizer
 
 
