@@ -27,6 +27,7 @@ ACTIONS = {
     'Stay': (0, 0)
 }
 
+
 def get_base_state():
     return np.asmatrix(np.zeros((GRID_SIZE, GRID_SIZE))).astype(int)
 

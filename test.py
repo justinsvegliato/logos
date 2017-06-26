@@ -5,10 +5,8 @@ import time
 import numpy as np
 
 import core
-import dp
 import grid_world as domain
-import rl
-from mdp import MDP
+from logos import MC, MDP, PI, TD, VI
 
 
 def simulate(policy):
@@ -30,7 +28,7 @@ def simulate(policy):
 
 def test(mdp, solver, tests=20):
     start = time.clock()
-    policy = solver(mdp)
+    policy = mdp.solve(solver=solver())
     end = time.clock()
 
     steps = [simulate(policy) for test in range(tests)]
@@ -50,10 +48,10 @@ def main():
         domain.get_reward
     )
 
-    print('VI: %s' % test(mdp, dp.value_iteration))
-    print('PI: %s' % test(mdp, dp.policy_iteration))
-    print('MC: %s' % test(mdp, rl.monte_carlo))
-    print('TD: %s' % test(mdp, rl.td_learning))
+    print('VI: %s' % test(mdp, VI))
+    print('PI: %s' % test(mdp, PI))
+    print('MC: %s' % test(mdp, MC))
+    print('TD: %s' % test(mdp, TD))
 
 
 if __name__ == '__main__':

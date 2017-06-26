@@ -6,7 +6,50 @@ import core
 import grid_world as domain
 
 
-def monte_carlo(mdp, episodes=250, epsilon=0.1):
+def vi(mdp, epsilon):
+    value_function = core.get_initial_value_function(mdp)
+
+    while True:
+        new_value_function = value_function.copy()
+        delta = 0
+
+        for state in mdp.states:
+            state_key = core.key(state)
+
+            current_reward = mdp.get_reward(state)
+            future_reward = max(core.get_action_values(mdp, value_function, state))
+            new_value_function[state_key] = current_reward + mdp.gamma * future_reward
+
+            delta = max(delta, abs(new_value_function[state_key] - value_function[state_key]))
+
+        value_function = new_value_function
+
+        if delta < epsilon:
+            return core.get_policy(mdp, value_function)
+
+
+def pi(mdp, iterations):
+    value_function = core.get_initial_value_function(mdp)
+    policy = core.get_policy(mdp, value_function)
+
+    while True:
+        for _ in range(iterations):
+            for state in mdp.states:
+                state_key = core.key(state)
+
+                current_reward = mdp.get_reward(state)
+                future_reward = core.get_action_value(mdp, value_function, state, policy[state_key])
+                value_function[state_key] = current_reward + mdp.gamma * future_reward
+
+        new_policy = core.get_policy(mdp, value_function)
+
+        if policy == new_policy:
+            return policy
+
+        policy = new_policy
+
+
+def mc(mdp, episodes, epsilon):
     action_value_function = core.get_initial_action_value_function(mdp)
     policy = core.get_epsilon_soft_policy(mdp, action_value_function, epsilon)
     returns = core.get_initial_returns(mdp)
@@ -19,7 +62,7 @@ def monte_carlo(mdp, episodes=250, epsilon=0.1):
     return core.get_deterministic_policy(mdp, policy)
 
 
-def td_learning(mdp, episodes=250, step_size=0.01, discount_factor=0.9, epsilon=0.1):
+def td(mdp, episodes, step_size, epsilon):
     action_value_function = core.get_initial_action_value_function(mdp)
     policy = core.get_epsilon_soft_policy(mdp, action_value_function, epsilon)
 
@@ -35,7 +78,7 @@ def td_learning(mdp, episodes=250, step_size=0.01, discount_factor=0.9, epsilon=
             next_state_key = core.key(next_state)
 
             reward = mdp.get_reward(state)
-            current_estimate = reward + discount_factor * action_value_function[next_state_key][next_action]
+            current_estimate = reward + mdp.gamma * action_value_function[next_state_key][next_action]
             previous_estimate = action_value_function[state_key][action]
             error = current_estimate - previous_estimate
             action_value_function[state_key][action] += step_size * error
